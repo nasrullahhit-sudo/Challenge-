@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIFE OS — Personal Discipline & Growth System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f4f6ff',
+                            100: '#e5e9ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            accent: '#d97706', // Gold accent
+                            accentLight: '#f59e0b'
+                        },
+                        dark: {
+                            bg: '#090d16',
+                            card: '#111827',
+                            border: '#1f2937',
+                            hover: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d16;
+            color: #f3f4f6;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .tab-btn.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .heatmap-cell {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col md:flex-row bg-slate-950 text-slate-100">
+
+    <!-- MOBILE TOP BAR -->
+    <div class="md:hidden flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-indigo-500/30">
+                L
+            </div>
+            <div>
+                <h1 class="font-bold text-base leading-none tracking-tight text-white">LIFE OS</h1>
+                <p class="text-[10px] text-amber-500 font-medium">Discipline is Power</p>
+            </div>
+        </div>
+        <button id="mobile-menu-btn" class="p-2 text-slate-400 hover:text-white rounded-lg focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- SIDEBAR NAVIGATION (Desktop & Mobile Drawer) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900/95 border-r border-slate-800 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between md:static">
+        <div class="p-4 space-y-6 overflow-y-auto">
+            <!-- Brand -->
+            <div class="hidden md:flex items-center space-x-3 px-2">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-amber-500 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-indigo-500/20">
+                    L
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-none text-white tracking-wide">LIFE OS</h1>
+                    <p class="text-[10px] text-amber-400 font-semibold uppercase tracking-wider mt-1">Discipline is Power</p>
+                </div>
+            </div>
+
+            <!-- Global Search & Quick Add -->
+            <div class="space-y-2">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+                    <input type="text" id="global-search" placeholder="Search tasks, notes..." class="w-full bg-slate-950 text-xs text-slate-200 pl-8 pr-3 py-2 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+                <button onclick="openModal('quick-add-modal')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md shadow-indigo-600/30 flex items-center justify-center space-x-2 transition">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Quick Create</span>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1">
+                <p class="px-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Modules</p>
+                <a href="#" onclick="switchTab('dashboard')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie text-indigo-400 w-4 text-center"></i>
+                    <span>Overview Dashboard</span>
+                </a>
+                <a href="#" onclick="switchTab('challenge')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="challenge">
+                    <i class="fa-solid fa-fire text-amber-500 w-4 text-center"></i>
+                    <span>30-Day Challenge</span>
+                    <span id="challenge-badge" class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 font-bold px-1.5 py-0.5 rounded-full">Active</span>
+                </a>
+                <a href="#" onclick="switchTab('tasks')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="tasks">
+                    <i class="fa-solid fa-list-check text-emerald-400 w-4 text-center"></i>
+                    <span>Tasks & Priorities</span>
+                </a>
+                <a href="#" onclick="switchTab('habits')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="habits">
+                    <i class="fa-solid fa-repeat text-cyan-400 w-4 text-center"></i>
+                    <span>Habits & Streaks</span>
+                </a>
+                <a href="#" onclick="switchTab('education')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="education">
+                    <i class="fa-solid fa-graduation-cap text-purple-400 w-4 text-center"></i>
+                    <span>CST Study Hub</span>
+                </a>
+                <a href="#" onclick="switchTab('freelance')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="freelance">
+                    <i class="fa-solid fa-briefcase text-blue-400 w-4 text-center"></i>
+                    <span>Fiverr Business Center</span>
+                </a>
+                <a href="#" onclick="switchTab('ai-studio')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="ai-studio">
+                    <i class="fa-solid fa-wand-magic-sparkles text-pink-400 w-4 text-center"></i>
+                    <span>AI Video Creator</span>
+                </a>
+                <a href="#" onclick="switchTab('content')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="content">
+                    <i class="fa-solid fa-share-nodes text-orange-400 w-4 text-center"></i>
+                    <span>Content Planner</span>
+                </a>
+                <a href="#" onclick="switchTab('routine')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="routine">
+                    <i class="fa-solid fa-kaaba text-emerald-500 w-4 text-center"></i>
+                    <span>Prayer & Routine</span>
+                </a>
+                <a href="#" onclick="switchTab('health')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="health">
+                    <i class="fa-solid fa-heart-pulse text-red-400 w-4 text-center"></i>
+                    <span>Health & Fitness</span>
+                </a>
+                <a href="#" onclick="switchTab('finance')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="finance">
+                    <i class="fa-solid fa-wallet text-amber-400 w-4 text-center"></i>
+                    <span>Finance Tracker</span>
+                </a>
+                <a href="#" onclick="switchTab('calendar')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="calendar">
+                    <i class="fa-solid fa-calendar-days text-indigo-400 w-4 text-center"></i>
+                    <span>Unified Calendar</span>
+                </a>
+                <a href="#" onclick="switchTab('focus')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="focus">
+                    <i class="fa-solid fa-stopwatch text-teal-400 w-4 text-center"></i>
+                    <span>Pomodoro Timer</span>
+                </a>
+                <a href="#" onclick="switchTab('analytics')" class="nav-link flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition group" data-tab="analytics">
+                    <i class="fa-solid fa-chart-column text-violet-400 w-4 text-center"></i>
+                    <span>Analytics & Reports</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Footer / System Actions -->
+        <div class="p-4 border-t border-slate-800 bg-slate-900/50 space-y-2">
+            <button onclick="switchTab('settings')" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-gear text-slate-400"></i>
+                <span>Settings & Data</span>
+            </button>
+            <div class="text-[11px] text-slate-500 text-center pt-1 font-mono">
+                Barishal, BD • BST (+6)
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-950">
+        <!-- TOP HEADER BAR -->
+        <header class="h-14 border-b border-slate-800 bg-slate-900/40 px-6 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h2 id="page-title" class="font-bold text-lg text-white">Dashboard Overview</h2>
+                <span id="current-date-display" class="text-xs text-slate-400 hidden sm:inline-block border-l border-slate-700 pl-4">--</span>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- Focus Quick Timer Pill -->
+                <div onclick="switchTab('focus')" class="cursor-pointer bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-full px-3 py-1 flex items-center space-x-2 transition">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="header-timer-display" class="text-xs font-mono font-medium text-slate-200">25:00</span>
+                </div>
+
+                <!-- Backup Quick Export -->
+                <button onclick="exportDataJSON()" title="Quick Export JSON" class="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-lg transition">
+                    <i class="fa-solid fa-download text-sm"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <div id="view-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+            
+            <!-- MODULE 1: DASHBOARD OVERVIEW -->
+            <div id="view-dashboard" class="tab-view space-y-6">
+                <!-- Banner / Motto -->
+                <div class="relative rounded-2xl bg-gradient-to-r from-indigo-900/60 via-slate-900 to-amber-950/40 border border-indigo-500/20 p-6 overflow-hidden">
+                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Daily Directive</span>
+                            <h2 class="text-2xl font-black text-white mt-1">"Discipline is Power | Keep Going!"</h2>
+                            <p class="text-xs text-slate-400 mt-1 max-w-xl" id="quote-display">Consistency is what transforms average into excellence. Complete today's priorities before rest.</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="switchTab('challenge')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-fire"></i>
+                                <span>Day Check-in</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Metrics Cards Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 text-xs">
+                            <span>Today's Completion</span>
+                            <i class="fa-solid fa-circle-check text-indigo-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white mt-2" id="kpi-today-completion">0%</div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                            <div id="kpi-today-bar" class="bg-indigo-500 h-full rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 text-xs">
+                            <span>Active Challenge</span>
+                            <i class="fa-solid fa-bolt text-amber-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white mt-2" id="kpi-challenge-day">Day 1/30</div>
+                        <div class="text-[11px] text-slate-400 mt-1" id="kpi-streak-count">Current Streak: 0 days</div>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 text-xs">
+                            <span>Study Hours Today</span>
+                            <i class="fa-solid fa-book-open text-purple-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white mt-2" id="kpi-study-hours">0.0 hrs</div>
+                        <div class="text-[11px] text-slate-400 mt-1">CST & English</div>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 text-xs">
+                            <span>Fiverr Impressions</span>
+                            <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white mt-2" id="kpi-fiverr-impressions">0</div>
+                        <div class="text-[11px] text-slate-400 mt-1" id="kpi-fiverr-ctr">CTR: 0.0%</div>
+                    </div>
+                </div>
+
+                <!-- Main Overview Split -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Today Priorities & Tasks -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-list-check text-indigo-400"></i>
+                                    <span>Today's Top Priorities</span>
+                                </h3>
+                                <button onclick="switchTab('tasks')" class="text-xs text-indigo-400 hover:underline">View All Tasks</button>
+                            </div>
+                            <div id="dash-priority-tasks-list" class="space-y-2">
+                                <!-- Dynamic Render -->
+                            </div>
+                        </div>
+
+                        <!-- Weekly Productivity Canvas Chart -->
+                        <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                            <h3 class="font-bold text-sm text-white mb-4 flex items-center space-x-2">
+                                <i class="fa-solid fa-chart-area text-amber-400"></i>
+                                <span>Weekly Completion Trend</span>
+                            </h3>
+                            <div class="h-48 w-full relative">
+                                <canvas id="chart-weekly-productivity" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Widgets -->
+                    <div class="space-y-4">
+                        <!-- Quick Health Pill -->
+                        <div class="glass-panel p-5 rounded-xl border border-slate-800 space-y-4">
+                            <h3 class="font-bold text-sm text-white flex items-center space-x-2">
+                                <i class="fa-solid fa-heart-pulse text-red-400"></i>
+                                <span>Daily Health Quick Check</span>
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-300">Water Glasses (Target: 8)</span>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="adjustWater(-1)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300">-</button>
+                                        <span id="dash-water-count" class="font-bold text-cyan-400">0 / 8</span>
+                                        <button onclick="adjustWater(1)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300">+</button>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-300">Exercise Minutes</span>
+                                    <span id="dash-exercise-mins" class="font-bold text-emerald-400">0 mins</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-300">Sleep Duration</span>
+                                    <span id="dash-sleep-hours" class="font-bold text-indigo-400">0 hrs</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Habit Mini Heatmap Summary -->
+                        <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                            <h3 class="font-bold text-sm text-white mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-calendar-grid text-cyan-400"></i>
+                                <span>Habit Heatmap</span>
+                            </h3>
+                            <div id="dash-habit-heatmap" class="grid grid-cols-7 gap-1.5 justify-items-center">
+                                <!-- Dynamic Render -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 2: 30-DAY CHALLENGE -->
+            <div id="view-challenge" class="tab-view space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-panel p-5 rounded-xl">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-fire text-amber-500"></i>
+                            <span>30-Day Discipline Challenge</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Oct 26, 2026 – Nov 24, 2026 • Timezone: Asia/Dhaka</p>
+                    </div>
+                    <!-- Day Switcher Controls -->
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeChallengeDay(-1)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2 rounded-lg text-xs"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+                        <span id="challenge-day-selector-title" class="font-mono text-sm font-bold text-amber-400 px-2">Day 1</span>
+                        <button onclick="changeChallengeDay(1)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2 rounded-lg text-xs">Next <i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Daily Checklist Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-panel p-5 rounded-xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div>
+                                <h3 class="font-bold text-sm text-white" id="challenge-active-date-str">Day 1 Checklist</h3>
+                                <p class="text-[11px] text-slate-400">Complete all 14 mandatory daily disciplines</p>
+                            </div>
+                            <div class="text-right">
+                                <span id="challenge-day-progress-pct" class="text-lg font-black text-amber-400">0%</span>
+                            </div>
+                        </div>
+
+                        <div id="challenge-checklist-container" class="space-y-2.5">
+                            <!-- Dynamic render 14 checklist items -->
+                        </div>
+                    </div>
+
+                    <!-- Reflection & Summary Sidebar -->
+                    <div class="space-y-4">
+                        <div class="glass-panel p-5 rounded-xl space-y-3">
+                            <h3 class="font-bold text-sm text-white">Daily Reflection & Notes</h3>
+                            <textarea id="challenge-daily-notes" rows="6" placeholder="Log wins, missed targets, or obstacles today..." class="w-full bg-slate-950 text-xs text-slate-200 p-3 rounded-xl border border-slate-800 focus:outline-none focus:border-amber-500 transition"></textarea>
+                            <button onclick="saveChallengeNotes()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold py-2 rounded-lg transition">Save Notes</button>
+                        </div>
+
+                        <!-- 30-Day Overview Grid -->
+                        <div class="glass-panel p-5 rounded-xl space-y-3">
+                            <h3 class="font-bold text-sm text-white">30-Day Grid Tracker</h3>
+                            <div id="challenge-30-grid" class="grid grid-cols-6 gap-2">
+                                <!-- 30 Mini Box Days -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 3: TASKS & PRIORITIES -->
+            <div id="view-tasks" class="tab-view space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="setTaskView('board')" class="task-view-btn active bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium">Board View</button>
+                        <button onclick="setTaskView('list')" class="task-view-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-medium">List View</button>
+                    </div>
+                    <button onclick="openModal('task-modal')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add New Task</span>
+                    </button>
+                </div>
+
+                <!-- Kanban Board View -->
+                <div id="task-board-view" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Column: To Do -->
+                    <div class="glass-panel p-4 rounded-xl space-y-3 border-t-2 border-slate-500">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+                            <span>TO DO</span>
+                            <span id="count-todo" class="bg-slate-800 px-2 py-0.5 rounded text-slate-400">0</span>
+                        </div>
+                        <div id="container-todo" class="space-y-3 min-h-[300px]"></div>
+                    </div>
+                    <!-- Column: In Progress -->
+                    <div class="glass-panel p-4 rounded-xl space-y-3 border-t-2 border-indigo-500">
+                        <div class="flex items-center justify-between text-xs font-bold text-indigo-400">
+                            <span>IN PROGRESS</span>
+                            <span id="count-inprogress" class="bg-indigo-950/60 px-2 py-0.5 rounded text-indigo-300">0</span>
+                        </div>
+                        <div id="container-inprogress" class="space-y-3 min-h-[300px]"></div>
+                    </div>
+                    <!-- Column: Completed -->
+                    <div class="glass-panel p-4 rounded-xl space-y-3 border-t-2 border-emerald-500">
+                        <div class="flex items-center justify-between text-xs font-bold text-emerald-400">
+                            <span>COMPLETED</span>
+                            <span id="count-completed" class="bg-emerald-950/60 px-2 py-0.5 rounded text-emerald-300">0</span>
+                        </div>
+                        <div id="container-completed" class="space-y-3 min-h-[300px]"></div>
+                    </div>
+                </div>
+
+                <!-- Task List View -->
+                <div id="task-list-view" class="glass-panel p-5 rounded-xl hidden">
+                    <div id="task-list-container" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- MODULE 4: HABITS & STREAKS -->
+            <div id="view-habits" class="tab-view space-y-6 hidden">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Habit Tracker & Consistency</h2>
+                        <p class="text-xs text-slate-400">Build long-term discipline through daily habit execution</p>
+                    </div>
+                    <button onclick="openModal('habit-modal')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-2 rounded-lg">
+                        + New Habit
+                    </button>
+                </div>
+                
+                <div id="habits-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic Render Habits -->
+                </div>
+            </div>
+
+            <!-- MODULE 5: CST STUDY HUB -->
+            <div id="view-education" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl flex flex-col md:flex-row justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-graduation-cap text-purple-400"></i>
+                            <span>Barishal Polytechnic Institute — CST Hub</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Computer Science & Technology • Academic Management</p>
+                    </div>
+                    <button onclick="openModal('subject-modal')" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg self-start">
+                        + Add Subject
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Subjects List & Syllabus % -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div id="subjects-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Dynamic Render Subjects -->
+                        </div>
+                    </div>
+
+                    <!-- Exam & Flashcards Sidebar -->
+                    <div class="space-y-4">
+                        <div class="glass-panel p-5 rounded-xl space-y-3">
+                            <h3 class="font-bold text-sm text-white">Upcoming Exams Countdown</h3>
+                            <div id="exam-countdown-list" class="space-y-2 text-xs text-slate-300">
+                                <!-- Dynamic Render Exams -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 6: FIVERR BUSINESS CENTER -->
+            <div id="view-freelance" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl flex flex-col md:flex-row justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-briefcase text-blue-400"></i>
+                            <span>Fiverr & AI Video Commercials Agency</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Gigs, Lead Pipeline & Financial Conversion Analytics</p>
+                    </div>
+                    <button onclick="openModal('fiverr-log-modal')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg self-start">
+                        + Log Daily Analytics
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-panel p-4 rounded-xl">
+                        <span class="text-xs text-slate-400">Total Impressions</span>
+                        <p id="fiverr-total-impressions" class="text-xl font-extrabold text-white mt-1">0</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl">
+                        <span class="text-xs text-slate-400">Total Clicks</span>
+                        <p id="fiverr-total-clicks" class="text-xl font-extrabold text-white mt-1">0</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl">
+                        <span class="text-xs text-slate-400">Overall CTR</span>
+                        <p id="fiverr-overall-ctr" class="text-xl font-extrabold text-emerald-400 mt-1">0.0%</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl">
+                        <span class="text-xs text-slate-400">Orders Completed</span>
+                        <p id="fiverr-total-orders" class="text-xl font-extrabold text-amber-400 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Client CRM Pipeline -->
+                <div class="glass-panel p-5 rounded-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-white">Client & Lead CRM Pipeline</h3>
+                        <button onclick="openModal('lead-modal')" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded text-slate-200">+ Add Lead</button>
+                    </div>
+                    <div id="leads-crm-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Render CRM pipeline -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 7: AI VIDEO CREATOR STUDIO -->
+            <div id="view-ai-studio" class="tab-view space-y-6 hidden">
+                <div class="flex justify-between items-center glass-panel p-5 rounded-xl">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
+                            <span>AI Video Creator Studio</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Prompts, Script Concepts & Video Production Pipeline</p>
+                    </div>
+                    <button onclick="openModal('ai-prompt-modal')" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-2 rounded-lg">
+                        + Save New Prompt
+                    </button>
+                </div>
+
+                <!-- Searchable Prompt Library -->
+                <div class="glass-panel p-5 rounded-xl space-y-4">
+                    <h3 class="font-bold text-sm text-white">Prompt Library & Templates</h3>
+                    <div id="prompts-library-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Dynamic Prompt Cards with Copy Buttons -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 8: CONTENT PLANNER -->
+            <div id="view-content" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl flex flex-col md:flex-row justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-share-nodes text-orange-400"></i>
+                            <span>Social Media & Outreach Planner</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">LinkedIn (8 PM Target), Musiela YT/IG & 20 Daily DMs Tracker</p>
+                    </div>
+                    <button onclick="openModal('content-modal')" class="bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold px-4 py-2 rounded-lg self-start">
+                        + Schedule Post
+                    </button>
+                </div>
+
+                <div id="content-posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic Posts Render -->
+                </div>
+            </div>
+
+            <!-- MODULE 9: PRAYER & ROUTINE -->
+            <div id="view-routine" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl space-y-4">
+                    <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-kaaba text-emerald-500"></i>
+                        <span>Prayer & Spiritual Routine</span>
+                    </h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        <div onclick="togglePrayer('fajr')" id="prayer-fajr" class="prayer-card glass-panel p-4 rounded-xl text-center cursor-pointer border border-slate-800 hover:border-emerald-500 transition">
+                            <span class="text-xs font-bold text-slate-300">Fajr</span>
+                            <div class="mt-2 text-xl text-slate-600"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        <div onclick="togglePrayer('dhuhr')" id="prayer-dhuhr" class="prayer-card glass-panel p-4 rounded-xl text-center cursor-pointer border border-slate-800 hover:border-emerald-500 transition">
+                            <span class="text-xs font-bold text-slate-300">Dhuhr</span>
+                            <div class="mt-2 text-xl text-slate-600"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        <div onclick="togglePrayer('asr')" id="prayer-asr" class="prayer-card glass-panel p-4 rounded-xl text-center cursor-pointer border border-slate-800 hover:border-emerald-500 transition">
+                            <span class="text-xs font-bold text-slate-300">Asr</span>
+                            <div class="mt-2 text-xl text-slate-600"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        <div onclick="togglePrayer('maghrib')" id="prayer-maghrib" class="prayer-card glass-panel p-4 rounded-xl text-center cursor-pointer border border-slate-800 hover:border-emerald-500 transition">
+                            <span class="text-xs font-bold text-slate-300">Maghrib</span>
+                            <div class="mt-2 text-xl text-slate-600"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        <div onclick="togglePrayer('isha')" id="prayer-isha" class="prayer-card glass-panel p-4 rounded-xl text-center cursor-pointer border border-slate-800 hover:border-emerald-500 transition">
+                            <span class="text-xs font-bold text-slate-300">Isha</span>
+                            <div class="mt-2 text-xl text-slate-600"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 10: HEALTH & FITNESS -->
+            <div id="view-health" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl space-y-4">
+                    <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-heart-pulse text-red-400"></i>
+                        <span>Health, Water & Sleep Tracker</span>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="glass-panel p-4 rounded-xl space-y-2">
+                            <span class="text-xs text-slate-400">Exercise Minutes Today</span>
+                            <input type="number" id="health-exercise-input" onchange="updateHealthMetric()" class="w-full bg-slate-950 p-2 text-sm text-white rounded border border-slate-800" placeholder="e.g. 45">
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl space-y-2">
+                            <span class="text-xs text-slate-400">Sleep Duration (Hours)</span>
+                            <input type="number" step="0.5" id="health-sleep-input" onchange="updateHealthMetric()" class="w-full bg-slate-950 p-2 text-sm text-white rounded border border-slate-800" placeholder="e.g. 8.0">
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl space-y-2">
+                            <span class="text-xs text-slate-400">Daily Energy Rating (1-10)</span>
+                            <input type="number" min="1" max="10" id="health-energy-input" onchange="updateHealthMetric()" class="w-full bg-slate-950 p-2 text-sm text-white rounded border border-slate-800" placeholder="8">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 11: FINANCE TRACKER -->
+            <div id="view-finance" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl flex flex-col md:flex-row justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-wallet text-amber-400"></i>
+                            <span>Personal Finance & Ledger</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Track Income, Freelance Revenue & Daily Expenses</p>
+                    </div>
+                    <button onclick="openModal('finance-modal')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg self-start">
+                        + Add Transaction
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-emerald-500">
+                        <span class="text-xs text-slate-400">Total Income</span>
+                        <p id="finance-total-income" class="text-2xl font-extrabold text-emerald-400 mt-1">$0.00</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-red-500">
+                        <span class="text-xs text-slate-400">Total Expenses</span>
+                        <p id="finance-total-expense" class="text-2xl font-extrabold text-red-400 mt-1">$0.00</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-indigo-500">
+                        <span class="text-xs text-slate-400">Net Balance</span>
+                        <p id="finance-net-balance" class="text-2xl font-extrabold text-indigo-400 mt-1">$0.00</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-xl space-y-3">
+                    <h3 class="font-bold text-sm text-white">Transaction History</h3>
+                    <div id="finance-transactions-list" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- MODULE 12: UNIFIED CALENDAR -->
+            <div id="view-calendar" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl space-y-4">
+                    <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-calendar-days text-indigo-400"></i>
+                        <span>Unified Event Calendar</span>
+                    </h2>
+                    <div id="calendar-events-container" class="space-y-2">
+                        <!-- Render dynamic cross-module deadlines & items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 13: POMODORO TIMER -->
+            <div id="view-focus" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-8 rounded-2xl max-w-xl mx-auto text-center space-y-6">
+                    <h2 class="text-2xl font-black text-white">Pomodoro Focus Studio</h2>
+                    <div class="text-6xl font-black font-mono text-indigo-400 tracking-wider" id="focus-timer-large">
+                        25:00
+                    </div>
+                    <div class="flex justify-center space-x-3">
+                        <button id="focus-start-btn" onclick="toggleFocusTimer()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition">Start</button>
+                        <button onclick="resetFocusTimer()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-6 py-2.5 rounded-xl transition">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 14: ANALYTICS -->
+            <div id="view-analytics" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl space-y-4">
+                    <h2 class="text-xl font-bold text-white">System Analytics & Growth Summary</h2>
+                    <p class="text-xs text-slate-400">Real performance statistics computed directly from your saved data.</p>
+                    <div class="h-64 w-full relative">
+                        <canvas id="chart-analytics-summary" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 15: SETTINGS & DATA -->
+            <div id="view-settings" class="tab-view space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-xl space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">System Settings & Local Data Safety</h2>
+                        <p class="text-xs text-slate-400 mt-1">Export, restore, or wipe local system data safely.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Backup All Data (JSON)</h4>
+                                <p class="text-xs text-slate-400">Save a complete snapshot file to your device.</p>
+                            </div>
+                            <button onclick="exportDataJSON()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-lg">Export JSON</button>
+                        </div>
+
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Restore Data (JSON)</h4>
+                                <p class="text-xs text-slate-400">Import a previously saved backup file.</p>
+                            </div>
+                            <input type="file" id="import-json-file" accept=".json" class="hidden" onchange="importDataJSON(event)">
+                            <button onclick="document.getElementById('import-json-file').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-lg">Import Backup</button>
+                        </div>
+
+                        <div class="p-4 bg-red-950/30 rounded-xl border border-red-900/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div>
+                                <h4 class="font-bold text-sm text-red-400">Factory Data Reset</h4>
+                                <p class="text-xs text-slate-400">Permanently clear local data and start fresh.</p>
+                            </div>
+                            <button onclick="resetAllData()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg">Reset All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL DIALOG CONTAINER (GENERIC QUICK MODALS) -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        
+        <!-- Task Create Modal -->
+        <div id="task-modal" class="modal-card glass-panel p-6 rounded-2xl w-full max-w-md space-y-4 hidden">
+            <h3 class="text-lg font-bold text-white">Create New Task</h3>
+            <input type="text" id="modal-task-title" placeholder="Task title..." class="w-full bg-slate-950 p-2.5 text-xs text-white rounded-lg border border-slate-800">
+            <div class="grid grid-cols-2 gap-3">
+                <select id="modal-task-priority" class="bg-slate-950 p-2.5 text-xs text-white rounded-lg border border-slate-800">
+                    <option value="low">Low Priority</option>
+                    <option value="medium" selected>Medium Priority</option>
+                    <option value="high">High Priority</option>
+                    <option value="urgent">Urgent</option>
+                </select>
+                <input type="date" id="modal-task-date" class="bg-slate-950 p-2.5 text-xs text-white rounded-lg border border-slate-800">
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeModal('task-modal')" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+                <button onclick="saveNewTask()" class="bg-indigo-600 px-4 py-1.5 text-xs text-white font-bold rounded-lg">Save Task</button>
+            </div>
+        </div>
+
+        <!-- Quick Create Selection Modal -->
+        <div id="quick-add-modal" class="modal-card glass-panel p-6 rounded-2xl w-full max-w-sm space-y-4 hidden text-center">
+            <h3 class="text-base font-bold text-white">Quick Create</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeModal('quick-add-modal'); openModal('task-modal');" class="p-4 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-bold text-indigo-400 flex flex-col items-center space-y-2">
+                    <i class="fa-solid fa-list-check text-lg"></i>
+                    <span>Task</span>
+                </button>
+                <button onclick="closeModal('quick-add-modal'); openModal('habit-modal');" class="p-4 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-bold text-cyan-400 flex flex-col items-center space-y-2">
+                    <i class="fa-solid fa-repeat text-lg"></i>
+                    <span>Habit</span>
+                </button>
+            </div>
+            <button onclick="closeModal('quick-add-modal')" class="text-xs text-slate-500 hover:text-white pt-2">Close</button>
+        </div>
+
+        <!-- Generic Habit Modal Placeholder -->
+        <div id="habit-modal" class="modal-card glass-panel p-6 rounded-2xl w-full max-w-md space-y-4 hidden">
+            <h3 class="text-lg font-bold text-white">Create Custom Habit</h3>
+            <input type="text" id="modal-habit-title" placeholder="Habit title (e.g., Read Quran)..." class="w-full bg-slate-950 p-2.5 text-xs text-white rounded-lg border border-slate-800">
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeModal('habit-modal')" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+                <button onclick="saveNewHabit()" class="bg-cyan-600 px-4 py-1.5 text-xs text-white font-bold rounded-lg">Save Habit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CORE SYSTEM SCRIPT -->
+    <script>
+        // SYSTEM INITIAL STATE STRUCTURE
+        const DEFAULT_STATE = {
+            challenge: {
+                startDate: '2026-10-26',
+                endDate: '2026-11-24',
+                activeDay: 1,
+                records: {} // dayNumber: { itemsCompleted: [], reflection: '' }
+            },
+            tasks: [
+                { id: 't1', title: 'Review CST Microprocessor Lecture Notes', status: 'todo', priority: 'high', date: '2026-10-26' },
+                { id: 't2', title: 'Publish LinkedIn AI Video Case Study', status: 'inprogress', priority: 'urgent', date: '2026-10-26' }
+            ],
+            habits: [
+                { id: 'h1', name: '5 Daily Prayers', targetDays: 30, completedDays: [] },
+                { id: 'h2', name: 'Exercise & Fitness (30 mins)', targetDays: 30, completedDays: [] }
+            ],
+            health: {
+                waterGlasses: 0,
+                exerciseMins: 0,
+                sleepHours: 7.5,
+                energyRating: 8
+            },
+            fiverrLogs: [],
+            leads: [],
+            prompts: [
+                { id: 'p1', title: 'Cinematic AI Commercial Script', text: 'Generate a 15-second high-energy product video prompt featuring dynamic lighting, 8k render, photorealistic product shot...' }
+            ],
+            posts: [],
+            finance: [],
+            prayers: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false }
+        };
+
+        let state = JSON.parse(localStorage.getItem('LIFE_OS_STATE')) || DEFAULT_STATE;
+
+        // Challenge 14 Default Disciplines
+        const CHALLENGE_TASKS = [
+            "Five daily prayers",
+            "Quran and Hadith study",
+            "CST study",
+            "English course",
+            "Typing practice",
+            "Exercise",
+            "Eight hours of sleep",
+            "Fiverr online availability",
+            "LinkedIn video post",
+            "Musiela YouTube activity",
+            "Musiela Instagram activity",
+            "Twenty Instagram outreach DMs",
+            "Portfolio or Fiverr gig work",
+            "Reels scrolling limited to one hour"
+        ];
+
+        // Core App Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            initDateDisplay();
+            renderDashboard();
+            renderChallenge();
+            renderTasks();
+            renderHabits();
+            renderHealth();
+            renderFinance();
+            renderPrompts();
+            renderPrayers();
+        });
+
+        function saveState() {
+            localStorage.setItem('LIFE_OS_STATE', JSON.stringify(state));
+            renderDashboard();
+        }
+
+        // Navigation Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active', 'bg-slate-800', 'text-white'));
+            
+            const targetView = document.getElementById(`view-${tabId}`);
+            if(targetView) targetView.classList.remove('hidden');
+            
+            const activeNav = document.querySelector(`[data-tab="${tabId}"]`);
+            if(activeNav) activeNav.classList.add('active', 'bg-slate-800', 'text-white');
+
+            const titleMap = {
+                dashboard: 'Overview Dashboard',
+                challenge: '30-Day Discipline Challenge',
+                tasks: 'Tasks & Priorities',
+                habits: 'Habits & Streaks',
+                education: 'CST Study Hub',
+                freelance: 'Fiverr Business Center',
+                'ai-studio': 'AI Video Creator Studio',
+                content: 'Social Media & Outreach Planner',
+                routine: 'Prayer & Spiritual Routine',
+                health: 'Health & Fitness',
+                finance: 'Personal Finance Ledger',
+                calendar: 'Unified Event Calendar',
+                focus: 'Pomodoro Focus Studio',
+                analytics: 'System Analytics',
+                settings: 'System Settings'
+            };
+            document.getElementById('page-title').innerText = titleMap[tabId] || 'LIFE OS';
+        }
+
+        function initDateDisplay() {
+            const now = new Date();
+            document.getElementById('current-date-display').innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Modal Helpers
+        function openModal(id) {
+            document.getElementById('modal-backdrop').classList.remove('hidden');
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // DASHBOARD COMPUTATIONS
+        function renderDashboard() {
+            // Task count completion %
+            const total = state.tasks.length;
+            const completed = state.tasks.filter(t => t.status === 'completed').length;
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('kpi-today-completion').innerText = `${pct}%`;
+            document.getElementById('kpi-today-bar').style.width = `${pct}%`;
+
+            // Active challenge stats
+            document.getElementById('kpi-challenge-day').innerText = `Day ${state.challenge.activeDay}/30`;
+            
+            // Priority list render
+            const priorityContainer = document.getElementById('dash-priority-tasks-list');
+            priorityContainer.innerHTML = '';
+            if(state.tasks.length === 0) {
+                priorityContainer.innerHTML = `<div class="text-xs text-slate-500 py-4 text-center">No active priority tasks. Create one using + Quick Create.</div>`;
+            } else {
+                state.tasks.slice(0, 4).forEach(t => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between p-2.5 bg-slate-900 rounded-lg text-xs';
+                    item.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" ${t.status === 'completed' ? 'checked' : ''} onchange="toggleTaskStatus('${t.id}')" class="rounded bg-slate-950 border-slate-700 text-indigo-500">
+                            <span class="${t.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-200'} font-medium">${t.title}</span>
+                        </div>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-indigo-950 text-indigo-400">${t.priority}</span>
+                    `;
+                    priorityContainer.appendChild(item);
+                });
+            }
+
+            renderMiniHeatmap();
+        }
+
+        function renderMiniHeatmap() {
+            const container = document.getElementById('dash-habit-heatmap');
+            container.innerHTML = '';
+            for(let i = 1; i <= 28; i++) {
+                const cell = document.createElement('div');
+                cell.className = `heatmap-cell ${i <= state.challenge.activeDay ? 'bg-indigo-600' : 'bg-slate-800'}`;
+                container.appendChild(cell);
+            }
+        }
+
+        // 30-DAY CHALLENGE MODULE
+        function renderChallenge() {
+            const currentDay = state.challenge.activeDay;
+            document.getElementById('challenge-day-selector-title').innerText = `Day ${currentDay}`;
+            document.getElementById('challenge-active-date-str').innerText = `Day ${currentDay} Mandatory Disciplines`;
+
+            const record = state.challenge.records[currentDay] || { itemsCompleted: [], reflection: '' };
+            const container = document.getElementById('challenge-checklist-container');
+            container.innerHTML = '';
+
+            CHALLENGE_TASKS.forEach((task, index) => {
+                const isChecked = record.itemsCompleted.includes(index);
+                const el = document.createElement('div');
+                el.className = 'flex items-center justify-between p-3 bg-slate-900/80 hover:bg-slate-900 rounded-xl border border-slate-800/80 transition';
+                el.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleChallengeItem(${index})" class="w-4 h-4 rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-0">
+                        <span class="text-xs ${isChecked ? 'line-through text-slate-500' : 'text-slate-200 font-medium'}">${index + 1}. ${task}</span>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+
+            // Day Completion %
+            const dayPct = Math.round((record.itemsCompleted.length / CHALLENGE_TASKS.length) * 100);
+            document.getElementById('challenge-day-progress-pct').innerText = `${dayPct}%`;
+            document.getElementById('challenge-daily-notes').value = record.reflection || '';
+
+            render30Grid();
+        }
+
+        function toggleChallengeItem(taskIdx) {
+            const day = state.challenge.activeDay;
+            if(!state.challenge.records[day]) {
+                state.challenge.records[day] = { itemsCompleted: [], reflection: '' };
+            }
+            const items = state.challenge.records[day].itemsCompleted;
+            const idx = items.indexOf(taskIdx);
+            if(idx > -1) items.splice(idx, 1);
+            else items.push(taskIdx);
+            saveState();
+            renderChallenge();
+        }
+
+        function saveChallengeNotes() {
+            const day = state.challenge.activeDay;
+            if(!state.challenge.records[day]) {
+                state.challenge.records[day] = { itemsCompleted: [], reflection: '' };
+            }
+            state.challenge.records[day].reflection = document.getElementById('challenge-daily-notes').value;
+            saveState();
+        }
+
+        function changeChallengeDay(delta) {
+            let nextDay = state.challenge.activeDay + delta;
+            if(nextDay >= 1 && nextDay <= 30) {
+                state.challenge.activeDay = nextDay;
+                saveState();
+                renderChallenge();
+            }
+        }
+
+        function render30Grid() {
+            const grid = document.getElementById('challenge-30-grid');
+            grid.innerHTML = '';
+            for(let d = 1; d <= 30; d++) {
+                const rec = state.challenge.records[d];
+                const count = rec ? rec.itemsCompleted.length : 0;
+                const isSelected = d === state.challenge.activeDay;
+                
+                let bgClass = 'bg-slate-900 text-slate-500';
+                if(count > 0 && count < 14) bgClass = 'bg-indigo-950 text-indigo-300 border border-indigo-700/50';
+                if(count === 14) bgClass = 'bg-amber-500 text-slate-950 font-bold';
+
+                const box = document.createElement('button');
+                box.onclick = () => { state.challenge.activeDay = d; saveState(); renderChallenge(); };
+                box.className = `p-2 text-center text-xs rounded-lg transition ${bgClass} ${isSelected ? 'ring-2 ring-amber-400' : ''}`;
+                box.innerText = d;
+                grid.appendChild(box);
+            }
+        }
+
+        // TASK MANAGER MODULE
+        function renderTasks() {
+            const todoContainer = document.getElementById('container-todo');
+            const inprogressContainer = document.getElementById('container-inprogress');
+            const completedContainer = document.getElementById('container-completed');
+
+            todoContainer.innerHTML = '';
+            inprogressContainer.innerHTML = '';
+            completedContainer.innerHTML = '';
+
+            let cTodo = 0, cProgress = 0, cCompleted = 0;
+
+            state.tasks.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-2';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-semibold text-slate-200">${t.title}</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[10px] text-slate-400">${t.date || 'No Date'}</span>
+                        <button onclick="deleteTask('${t.id}')" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+
+                if(t.status === 'todo') { todoContainer.appendChild(card); cTodo++; }
+                else if(t.status === 'inprogress') { inprogressContainer.appendChild(card); cProgress++; }
+                else { completedContainer.appendChild(card); cCompleted++; }
+            });
+
+            document.getElementById('count-todo').innerText = cTodo;
+            document.getElementById('count-inprogress').innerText = cProgress;
+            document.getElementById('count-completed').innerText = cCompleted;
+        }
+
+        function saveNewTask() {
+            const title = document.getElementById('modal-task-title').value;
+            const priority = document.getElementById('modal-task-priority').value;
+            const date = document.getElementById('modal-task-date').value;
+
+            if(!title) return;
+
+            state.tasks.push({
+                id: 't_' + Date.now(),
+                title,
+                priority,
+                date,
+                status: 'todo'
+            });
+
+            document.getElementById('modal-task-title').value = '';
+            closeModal('task-modal');
+            saveState();
+            renderTasks();
+        }
+
+        function toggleTaskStatus(id) {
+            const t = state.tasks.find(x => x.id === id);
+            if(t) {
+                t.status = t.status === 'completed' ? 'todo' : 'completed';
+                saveState();
+                renderTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            state.tasks = state.tasks.filter(x => x.id !== id);
+            saveState();
+            renderTasks();
+        }
+
+        function setTaskView(view) {
+            document.getElementById('task-board-view').classList.toggle('hidden', view !== 'board');
+            document.getElementById('task-list-view').classList.toggle('hidden', view !== 'list');
+        }
+
+        // HABITS MODULE
+        function renderHabits() {
+            const container = document.getElementById('habits-list-container');
+            container.innerHTML = '';
+            state.habits.forEach(h => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-4 rounded-xl flex items-center justify-between border border-slate-800';
+                card.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-sm text-white">${h.name}</h4>
+                        <p class="text-xs text-slate-400 mt-1">Consistency Goal: 30 Days Target</p>
+                    </div>
+                    <button onclick="deleteHabit('${h.id}')" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function saveNewHabit() {
+            const name = document.getElementById('modal-habit-title').value;
+            if(!name) return;
+            state.habits.push({ id: 'h_' + Date.now(), name, targetDays: 30, completedDays: [] });
+            document.getElementById('modal-habit-title').value = '';
+            closeModal('habit-modal');
+            saveState();
+            renderHabits();
+        }
+
+        function deleteHabit(id) {
+            state.habits = state.habits.filter(x => x.id !== id);
+            saveState();
+            renderHabits();
+        }
+
+        // HEALTH MODULE
+        function adjustWater(delta) {
+            state.health.waterGlasses = Math.max(0, state.health.waterGlasses + delta);
+            saveState();
+            renderHealth();
+        }
+
+        function updateHealthMetric() {
+            state.health.exerciseMins = parseInt(document.getElementById('health-exercise-input').value) || 0;
+            state.health.sleepHours = parseFloat(document.getElementById('health-sleep-input').value) || 0;
+            state.health.energyRating = parseInt(document.getElementById('health-energy-input').value) || 0;
+            saveState();
+            renderHealth();
+        }
+
+        function renderHealth() {
+            document.getElementById('dash-water-count').innerText = `${state.health.waterGlasses} / 8`;
+            document.getElementById('dash-exercise-mins').innerText = `${state.health.exerciseMins} mins`;
+            document.getElementById('dash-sleep-hours').innerText = `${state.health.sleepHours} hrs`;
+
+            if(document.getElementById('health-exercise-input')) {
+                document.getElementById('health-exercise-input').value = state.health.exerciseMins || '';
+                document.getElementById('health-sleep-input').value = state.health.sleepHours || '';
+                document.getElementById('health-energy-input').value = state.health.energyRating || '';
+            }
+        }
+
+        // PRAYERS MODULE
+        function togglePrayer(name) {
+            state.prayers[name] = !state.prayers[name];
+            saveState();
+            renderPrayers();
+        }
+
+        function renderPrayers() {
+            ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(p => {
+                const card = document.getElementById(`prayer-${p}`);
+                if(card) {
+                    if(state.prayers[p]) {
+                        card.classList.add('border-emerald-500', 'bg-emerald-950/20');
+                        card.querySelector('i').className = 'fa-solid fa-circle-check text-emerald-400';
+                    } else {
+                        card.classList.remove('border-emerald-500', 'bg-emerald-950/20');
+                        card.querySelector('i').className = 'fa-solid fa-circle-check text-slate-700';
+                    }
+                }
+            });
+        }
+
+        // AI STUDIO MODULE
+        function renderPrompts() {
+            const container = document.getElementById('prompts-library-grid');
+            if(!container) return;
+            container.innerHTML = '';
+            state.prompts.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-4 rounded-xl border border-slate-800 space-y-2';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-xs text-white">${p.title}</h4>
+                        <button onclick="copyToClipboard('${p.text.replace(/'/g, "\\'")}')" class="text-xs text-indigo-400 hover:underline"><i class="fa-solid fa-copy"></i> Copy</button>
+                    </div>
+                    <p class="text-[11px] text-slate-400 font-mono bg-slate-950 p-2.5 rounded-lg border border-slate-900">${p.text}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
+
+        // FINANCE MODULE
+        function renderFinance() {
+            const list = document.getElementById('finance-transactions-list');
+            if(!list) return;
+            list.innerHTML = '';
+            if(state.finance.length === 0) {
+                list.innerHTML = `<div class="text-xs text-slate-500 py-2">No income or expense transactions logged yet.</div>`;
+            }
+        }
+
+        // POMODORO TIMER CORE
+        let timerInterval = null;
+        let timerSeconds = 25 * 60;
+        let isTimerRunning = false;
+
+        function toggleFocusTimer() {
+            const btn = document.getElementById('focus-start-btn');
+            if(isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                btn.innerText = 'Start';
+            } else {
+                isTimerRunning = true;
+                btn.innerText = 'Pause';
+                timerInterval = setInterval(() => {
+                    if(timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplays();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        btn.innerText = 'Start';
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetFocusTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = 25 * 60;
+            document.getElementById('focus-start-btn').innerText = 'Start';
+            updateTimerDisplays();
+        }
+
+        function updateTimerDisplays() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            const str = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('header-timer-display').innerText = str;
+            document.getElementById('focus-timer-large').innerText = str;
+        }
+
+        // BACKUP & RESTORE DATA MANAGEMENT
+        function exportDataJSON() {
+            const jsonStr = JSON.stringify(state, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `LIFE_OS_BACKUP_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importDataJSON(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    state = parsed;
+                    saveState();
+                    location.reload();
+                } catch(err) {
+                    alert('Invalid JSON File Format');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetAllData() {
+            if(confirm('Are you sure you want to clear all data and reset to defaults?')) {
+                localStorage.removeItem('LIFE_OS_STATE');
+                state = DEFAULT_STATE;
+                saveState();
+                location.reload();
+            }
+        }
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    </script>
+</body>
+</html>
